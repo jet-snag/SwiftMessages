@@ -522,6 +522,10 @@ extension SwiftMessages {
         globalInstance.show(config: config, view: view)
     }
 
+    public static func hideWithoutAnimation() {
+        globalInstance.hideWithOutAnmiation()
+    }
+    
     public static func hide() {
         globalInstance.hide()
     }
