@@ -244,6 +244,16 @@ public class SwiftMessages: PresenterDelegate {
     }
     
     /**
+     Hide the current message being displayed withtout it away.
+     */
+    public func hideWithOutAnmiation() {
+        dispatch_async(syncQueue) { [weak self] in
+            guard let strongSelf = self else { return }
+            strongSelf.hideCurrent(animated: false)
+        }
+    }
+    
+    /**
      Hide the current message being displayed by animating it away.
      */
     public func hide() {
@@ -341,17 +351,17 @@ public class SwiftMessages: PresenterDelegate {
         }
     }
     
-    func hideCurrent() {
+    func hideCurrent(animated animated: Bool = true) {
         guard let current = current else { return }
         dispatch_async(dispatch_get_main_queue()) { [weak self] in
-            current.hide { (completed) in
+            current.hide(animated: animated, completion: { (completed) in
                 guard completed else { return }
                 guard let strongSelf = self else { return }
                 dispatch_async(strongSelf.syncQueue, {
                     guard let strongSelf = self else { return }
                     strongSelf.current = nil
                 })
-            }
+            })
         }
     }
     

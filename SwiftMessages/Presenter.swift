@@ -238,20 +238,29 @@ class Presenter: NSObject, UIGestureRecognizerDelegate {
         }
     }
 
-    func hide(completion completion: (completed: Bool) -> Void) {
+    func hide(animated animated: Bool = true, completion completion: (completed: Bool) -> Void) {
         switch config.presentationStyle {
         case .Top, .Bottom:
-            UIView.animateWithDuration(0.2, delay: 0, options: [.BeginFromCurrentState, .CurveEaseIn], animations: {
-                let size = self.view.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize)
-                self.translationConstraint.constant -= size.height
-                self.view.superview?.layoutIfNeeded()
-                }, completion: { completed in
-                    if let viewController = self.presentationContext.value as? WindowViewController {
-                        viewController.uninstall()
-                    }
-                    self.maskingView.removeFromSuperview()
-                    completion(completed: completed)
-            })
+            if animated {
+                UIView.animateWithDuration(0.2, delay: 0, options: [.BeginFromCurrentState, .CurveEaseIn], animations: {
+                    let size = self.view.systemLayoutSizeFittingSize(UILayoutFittingCompressedSize)
+                    self.translationConstraint.constant -= size.height
+                    self.view.superview?.layoutIfNeeded()
+                    }, completion: { completed in
+                        if let viewController = self.presentationContext.value as? WindowViewController {
+                            viewController.uninstall()
+                        }
+                        self.maskingView.removeFromSuperview()
+                        completion(completed: completed)
+                })
+            }
+            else {
+                if let viewController = self.presentationContext.value as? WindowViewController {
+                    viewController.uninstall()
+                }
+                self.maskingView.removeFromSuperview()
+                completion(completed: true)
+            }
 // TODO the spring animation makes the interactive hide transition smoother, but
 // TODO the added delay due to damping makes status bar style transitions look bad.
 // TODO need to find an animation technique that accommodates both concerns.
